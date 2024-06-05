@@ -1,35 +1,44 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
-import './App.css'
+import React, { useState, useEffect } from "react";
+import SubjectForm from "./components/SubjectForm";
+import SubjectList from "./components/SubjectList";
+import "./App.css";
 
 function App() {
-  const [count, setCount] = useState(0)
+  const [subjects, setSubjects] = useState([]);
+
+  useEffect(() => {
+    if (subjects.length > 0) {
+      localStorage.setItem("subject", JSON.stringify(subjects));
+    }
+  }, [subjects]);
+
+  useEffect(() => {
+    if (localStorage.getItem("subject")) {
+      let array = JSON.parse(localStorage.getItem("subject"));
+      setSubjects(array);
+    }
+  }, []);
+
+  const addSubject = (name, hours) => {
+    setSubjects([...subjects, { name, hours }]);
+  };
+
+  const updateSubjectHours = (index, hours) => {
+    const newSubjects = [...subjects];
+    newSubjects[index].hours = hours;
+    setSubjects(newSubjects);
+  };
 
   return (
-    <>
-      <div>
-        <a href="https://vitejs.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.jsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
-    </>
-  )
+    <div className="App">
+      <h1>Education Planner</h1>
+      <SubjectForm addSubject={addSubject} />
+      <SubjectList
+        subjects={subjects}
+        updateSubjectHours={updateSubjectHours}
+      />
+    </div>
+  );
 }
 
-export default App
+export default App;
